@@ -1,0 +1,31 @@
+/* eslint-disable no-unused-vars */
+import { BASE_URL } from "@/constants";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+const baseQuery = fetchBaseQuery({
+  baseUrl: BASE_URL,
+  prepareHeaders: (headers) => {
+    return headers;
+  },
+});
+
+export const apiSlice = createApi({
+  baseQuery,
+  tagTypes: [
+    "Message",
+    "User",
+    "Auth",
+    "Upload",
+    "Product",
+    "Color",
+    "Category",
+    "Cart",
+    "Size",
+    "Inventory",
+    "Payment",
+    "Recommendation",
+    "Users",
+    "Store",
+  ],
+  endpoints: (_builder) => ({}),
+});
