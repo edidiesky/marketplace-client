@@ -86,41 +86,23 @@ export const PasswordFormData: ProfilePasswordDataItem[] = [
 // --------------------------- form Data List End --------------------
 
 // ------------- API REQUEST ROUTE -----------------
-export const BASE_URL = ""
-  // process.env.NODE_ENV === "development" ? "http://localhost:4000" : "";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
 
-export const MESSAGE_URL = "http://localhost:4000/api/v1/message";
-export const USERS_URL = "http://localhost:4000/api/v1/users";
-export const AUTH_URL = "http://localhost:4001/api/v1/auth";
-export const UPLOAD_URL = "http://localhost:4000/api/v1/upload";
-export const STORE_URL = "http://localhost:4004/api/v1/store";
-export const PRODUCT_URL = "http://localhost:4002/api/v1/product";
-export const CATEGORY_URL = "http://localhost:4008/api/v1/categories";
-export const COLOR_URL = "http://localhost:4006/api/v1/colors";
-export const SIZE_URL = "http://localhost:4007/api/v1/size";
-export const CART_URL = "http://localhost:4000/api/v1/cart";
-export const INVENTORY_URL = "http://localhost:4000/api/v1/inventory";
-export const WISHLIST_URL = "http://localhost:4000/api/v1/wishlist";
-export const PAYMENT_URL = "http://localhost:4000/api/v1/payment";
-export const RECOMMENDATION_URL = "http://localhost:4000/api/v1/recommendation";
-
-// ------------- API REQUEST ROUTE END -----------------
-
-
-// export const BASE_URL =
-//   process.env.NODE_ENV === "development" ? "http://192.168.99.100:8000/" : "";
-
-// export const MESSAGE_URL = "message";
-// export const USERS_URL = "users";
-// export const AUTH_URL = "auth";
-// export const UPLOAD_URL = "upload";
-// export const STORE_URL = "store";
-// export const PRODUCT_URL = "product";
-// export const CATEGORY_URL = "categories";
-// export const COLOR_URL = "colors";
-// export const SIZE_URL = "size";
-// export const CART_URL = "cart";
-// export const INVENTORY_URL = "inventory";
-// export const WISHLIST_URL = "wishlist";
-// export const PAYMENT_URL = "payment";
-// export const RECOMMENDATION_URL = "recommendation";
+export const AUTH_URL        = `${BASE_URL}/api/v1/auth`;
+export const USER_URL        = `${BASE_URL}/api/v1/users`;
+export const ROLE_URL        = `${BASE_URL}/api/v1/roles`;
+export const STORE_URL       = `${BASE_URL}/api/v1/stores`;
+export const PRODUCT_URL     = `${BASE_URL}/api/v1/products`;
+export const CART_URL        = `${BASE_URL}/api/v1/carts`;
+export const ORDER_URL       = `${BASE_URL}/api/v1/orders`;
+export const INVENTORY_URL   = `${BASE_URL}/api/v1/inventories`;
+export const PAYMENT_URL     = `${BASE_URL}/api/v1/payments`;
+export const PAYOUT_URL      = `${BASE_URL}/api/v1/payouts`;
+export const WALLET_URL      = `${BASE_URL}/api/v1/wallets`;
+export const NOTIFICATION_URL= `${BASE_URL}/api/v1/notifications`;
+export const REVIEW_URL      = `${BASE_URL}/api/v1/reviews`;
+export const CATEGORY_URL    = `${BASE_URL}/api/v1/categories`;
+export const COLOR_URL       = `${BASE_URL}/api/v1/colors`;
+export const SIZE_URL        = `${BASE_URL}/api/v1/sizes`;
+export const UPLOAD_URL      = `${BASE_URL}/api/v1/uploads`;
+export const CONVERSATION_URL= `${BASE_URL}/api/v1/conversations`;

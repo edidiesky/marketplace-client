@@ -1,72 +1,36 @@
-import { AUTH_URL, USERS_URL } from "@/constants";
+import { USER_URL } from "@/constants";
 import { apiSlice } from "./apiSlice";
+import type { User, UserListResponse, UpdateUserPayload, UserQueryParams } from "@/types/api";
 
 export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation({
-      query: (data) => ({
-        method: "POST",
-        credentials: "include",
-        body: data,
-        url: `${AUTH_URL}/login`,
-      }),
+    getAllUsers: builder.query<UserListResponse, UserQueryParams>({
+      query: (params) => ({ method: "GET", url: USER_URL, params }),
+      providesTags: ["User"],
     }),
-    register: builder.mutation({
-      query: (data) => ({
-        method: "POST",
-        body: data,
-        credentials: "include",
-        url: `${AUTH_URL}/register`,
-      }),
+    getAggregatedUsers: builder.query<{ success: boolean; data: unknown[] }, void>({
+      query: () => ({ method: "GET", url: `${USER_URL}/aggregated-users/users` }),
+      providesTags: ["User"],
     }),
-    logout: builder.mutation({
-      query: (data) => ({
-        method: "POST",
-        body: data,
-        url: `${AUTH_URL}/logout`,
-      }),
+    getUser: builder.query<{ success: boolean; data: User }, string>({
+      query: (id) => ({ method: "GET", url: `${USER_URL}/${id}` }),
+      providesTags: (_r, _e, id) => [{ type: "User", id }],
     }),
-    getAllUser: builder.query({
-      query: (data) => ({
-        method: "GET",
-        body: data,
-        credentials: "include",
-        url: `${USERS_URL}`,
-      }),
+    updateUser: builder.mutation<{ success: boolean; data: User }, { id: string } & UpdateUserPayload>({
+      query: ({ id, ...body }) => ({ method: "PUT", url: `${USER_URL}/${id}`, body }),
+      invalidatesTags: (_r, _e, { id }) => [{ type: "User", id }],
     }),
-    getSingleUser: builder.query({
-      query: (data) => ({
-        method: "GET",
-        body: data,
-        credentials: "include",
-        url: `${USERS_URL}/${data?.id}`,
-      }),
-    }),
-    adminDeleteUser: builder.mutation({
-      query: (data) => ({
-        method: "DELETE",
-        body: data,
-        credentials: "include",
-        url: `${USERS_URL}/${data?.id}`,
-      }),
-    }),
-    adminUpdateUser: builder.mutation({
-      query: (data) => ({
-        method: "PUT",
-        body: data,
-        credentials: "include",
-        url: `${USERS_URL}/${data?.id}`,
-      }),
+    deleteUser: builder.mutation<{ success: boolean; message: string }, string>({
+      query: (id) => ({ method: "DELETE", url: `${USER_URL}/${id}` }),
+      invalidatesTags: ["User"],
     }),
   }),
 });
 
 export const {
-  useLoginMutation,
-  useLogoutMutation,
-  useRegisterMutation,
-  useGetAllUserQuery,
-  useGetSingleUserQuery,
-  useAdminUpdateUserMutation,
-  useAdminDeleteUserMutation,
+  useGetAllUsersQuery,
+  useGetAggregatedUsersQuery,
+  useGetUserQuery,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
 } = userApiSlice;

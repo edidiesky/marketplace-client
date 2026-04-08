@@ -1,41 +1,39 @@
-"use client";
-import { createSlice } from "@reduxjs/toolkit";
-// const customerData = null;
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { User } from "@/types/api";
 
-const getUserData = () => {
-  if (typeof window !== "undefined") {
-    const storedUser = localStorage.getItem("customer");
-    if (storedUser && storedUser !== "undefined") {
-      try {
-        return JSON.parse(storedUser);
-      } catch (error) {
-        console.error("Failed to parse user data:", error);
-        localStorage.removeItem("customer"); // Clear invalid data
-      }
-    }
-  }
-  return null;
+interface AuthState {
+  user: User | null;
+  accessToken: string | null;
+  isAuthenticated: boolean;
+}
+
+const initialState: AuthState = {
+  user: null,
+  accessToken: null,
+  isAuthenticated: false,
 };
 
-const initialState = {
-  currentUser: getUserData(),
-};
-export const authSlice = createSlice({
+const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    LogOut: (state, _action) => {
-      state.currentUser = null;
-      localStorage.removeItem("customer");
+    setCredentials: (state, action: PayloadAction<{ user: User; accessToken: string }>) => {
+      state.user = action.payload.user;
+      state.accessToken = action.payload.accessToken;
+      state.isAuthenticated = true;
     },
-    setUserCredentials: (state, action) => {
-      state.currentUser = action.payload.user;
-      // console.log(action.payload)
-      localStorage.setItem("customer", JSON.stringify(action.payload.user));
+    clearCredentials: (state) => {
+      state.user = null;
+      state.accessToken = null;
+      state.isAuthenticated = false;
     },
   },
 });
 
-export const { LogOut, setUserCredentials } = authSlice.actions;
-
+export const { setCredentials, clearCredentials } = authSlice.actions;
 export default authSlice.reducer;
+
+// Selectors
+export const selectCurrentUser = (state: { auth: AuthState }) => state.auth.user;
+export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.isAuthenticated;
+export const selectAccessToken = (state: { auth: AuthState }) => state.auth.accessToken;

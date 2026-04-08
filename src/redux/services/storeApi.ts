@@ -1,53 +1,36 @@
 import { STORE_URL } from "@/constants";
 import { apiSlice } from "./apiSlice";
+import type { Store, StoreListResponse, CreateStorePayload, UpdateStorePayload } from "@/types/api";
 
-export const StoreApiSlice = apiSlice.injectEndpoints({
+export const storeApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAllStore: builder.query({
-      query: (data) => ({
-        method: "GET",
-        credentials: "include",
-        url: `${STORE_URL}`,
-      }),
+    createStore: builder.mutation<{ success: boolean; data: Store }, CreateStorePayload>({
+      query: (body) => ({ method: "POST", url: STORE_URL, body }),
+      invalidatesTags: ["Store"],
+    }),
+    getAllStores: builder.query<StoreListResponse, { page?: number; limit?: number; isActive?: boolean; plan?: string }>({
+      query: (params) => ({ method: "GET", url: STORE_URL, params }),
       providesTags: ["Store"],
     }),
-    createStore: builder.mutation({
-      query: ({ storeid, ...formdata }) => ({
-        method: "POST",
-        body: formdata,
-        credentials: "include",
-        url: `${STORE_URL}/${storeid}`,
-      }),
+    getStore: builder.query<{ success: boolean; data: Store }, string>({
+      query: (id) => ({ method: "GET", url: `${STORE_URL}/${id}` }),
+      providesTags: (_r, _e, id) => [{ type: "Store", id }],
     }),
-    getSingleStore: builder.query({
-      query: (data) => ({
-        method: "GET",
-        credentials: "include",
-        url: `${STORE_URL}/${data?.id}`,
-      }),
+    updateStore: builder.mutation<{ success: boolean; data: Store }, { id: string } & UpdateStorePayload>({
+      query: ({ id, ...body }) => ({ method: "PUT", url: `${STORE_URL}/${id}`, body }),
+      invalidatesTags: (_r, _e, { id }) => [{ type: "Store", id }, "Store"],
     }),
-    updateStore: builder.mutation({
-      query: (data) => ({
-        method: "PUT",
-        body: data,
-        credentials: "include",
-        url: `${STORE_URL}/${data?.id}`,
-      }),
-    }),
-    deleteStore: builder.mutation({
-      query: (data) => ({
-        method: "DELETE",
-        credentials: "include",
-        url: `${STORE_URL}/${data?.id}`,
-      }),
+    deleteStore: builder.mutation<ApiSuccessResponse, string>({
+      query: (id) => ({ method: "DELETE", url: `${STORE_URL}/${id}` }),
+      invalidatesTags: ["Store"],
     }),
   }),
 });
 
 export const {
-  useGetAllStoreQuery,
-  useDeleteStoreMutation,
-  useUpdateStoreMutation,
-  useGetSingleStoreQuery,
   useCreateStoreMutation,
-} = StoreApiSlice;
+  useGetAllStoresQuery,
+  useGetStoreQuery,
+  useUpdateStoreMutation,
+  useDeleteStoreMutation,
+} = storeApiSlice;

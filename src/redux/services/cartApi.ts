@@ -1,52 +1,49 @@
 import { CART_URL } from "@/constants";
 import { apiSlice } from "./apiSlice";
+import type { Cart, AddToCartPayload, UpdateCartItemPayload } from "@/types/api";
 
-export const CartApiSlice = apiSlice.injectEndpoints({
+export const cartApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAllUserCart: builder.query({
-      query: (data) => ({
-        method: "GET",
-        credentials: "include",
-        url: `${CART_URL}`,
-      }),
-    }),
-    createCart: builder.mutation({
-      query: (data) => ({
+    addToCart: builder.mutation<{ success: boolean; data: Cart }, { storeId: string } & AddToCartPayload>({
+      query: ({ storeId, ...body }) => ({
         method: "POST",
-        body: data,
-        credentials: "include",
-        url: `${CART_URL}`,
+        url: `${CART_URL}/${storeId}/store`,
+        body,
       }),
+      invalidatesTags: ["Cart"],
     }),
-    getSingleCart: builder.query({
-      query: (data) => ({
+    getUserCart: builder.query<{ success: boolean; data: Cart }, string>({
+      query: (storeId) => ({ method: "GET", url: `${CART_URL}/${storeId}/store` }),
+      providesTags: ["Cart"],
+    }),
+    getAllStoreCarts: builder.query<{ success: boolean; data: Cart[] }, { storeId: string; page?: number; limit?: number }>({
+      query: ({ storeId, ...params }) => ({
         method: "GET",
-        credentials: "include",
-        url: `${CART_URL}/${data?.id}/${data?.CartUserId}`,
+        url: `${CART_URL}/${storeId}/admin/carts`,
+        params,
       }),
+      providesTags: ["Cart"],
     }),
-    updateCart: builder.mutation({
-      query: (data) => ({
-        method: "PUT",
-        body: data,
-        credentials: "include",
-        url: `${CART_URL}/${data?.id}/${data?.Cartuserid}`,
-      }),
+    getCart: builder.query<{ success: boolean; data: Cart }, string>({
+      query: (id) => ({ method: "GET", url: `${CART_URL}/${id}` }),
+      providesTags: (_r, _e, id) => [{ type: "Cart", id }],
     }),
-    deleteCart: builder.mutation({
-      query: (data) => ({
-        method: "DELETE",
-        credentials: "include",
-        url: `${CART_URL}/${data?.id}/${data?.Cartuserid}`,
-      }),
+    updateCartItem: builder.mutation<{ success: boolean; data: Cart }, { id: string } & UpdateCartItemPayload>({
+      query: ({ id, ...body }) => ({ method: "PUT", url: `${CART_URL}/${id}`, body }),
+      invalidatesTags: ["Cart"],
+    }),
+    deleteCartItem: builder.mutation<ApiSuccessResponse, { id: string; productId?: string }>({
+      query: ({ id, ...body }) => ({ method: "DELETE", url: `${CART_URL}/${id}`, body }),
+      invalidatesTags: ["Cart"],
     }),
   }),
 });
 
 export const {
-  useGetAllUserCartQuery,
-  useDeleteCartMutation,
-  useUpdateCartMutation,
-  useGetSingleCartQuery,
-  useCreateCartMutation,
-} = CartApiSlice;
+  useAddToCartMutation,
+  useGetUserCartQuery,
+  useGetAllStoreCartsQuery,
+  useGetCartQuery,
+  useUpdateCartItemMutation,
+  useDeleteCartItemMutation,
+} = cartApiSlice;
