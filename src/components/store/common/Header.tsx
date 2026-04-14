@@ -1,110 +1,125 @@
-"use client";
-import { onLoginModal, onRegisterModal } from "@/redux/slices/modalSlice";
-import { Link } from "react-router-dom";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { TiSocialFacebook } from "react-icons/ti";
-import { FaXTwitter } from "react-icons/fa6";
-import { FaInstagram } from "react-icons/fa";
-import { FaYoutube } from "react-icons/fa";
-import { BsCart } from "react-icons/bs";
-const Header = () => {
-  const dispatch = useDispatch();
-  const { currentUser } = useSelector((store: { auth?: any }) => store.auth);
-  // console.log(currentUser);
+import { useSelector } from "react-redux";
+import { LiaArrowsAltVSolid } from "react-icons/lia";
+import { GoPlus } from "react-icons/go";
+import { LuSearch } from "react-icons/lu";
+import { RiExternalLinkFill } from "react-icons/ri";
+import { IoStorefrontOutline } from "react-icons/io5";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown";
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetAllStoresQuery, useGetStoreQuery } from "@/redux/services/storeApi";
+import UserProfile from "@/components/common/UserProfile";
+import { selectCurrentUser } from "@/redux/slices/authSlice";
+import type { Store } from "@/types/api";
+
+export default function Header() {
+  const currentUser = useSelector(selectCurrentUser);
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [search, setSearch] = React.useState("");
+
+  const { data: storesData } = useGetAllStoresQuery(
+    {},
+    { skip: !currentUser }
+  );
+  const { data: singleStoreData } = useGetStoreQuery(id ?? "", {
+    skip: !id,
+  });
+
+  const stores = storesData?.data ?? [];
+  const singleStore = singleStoreData?.data;
+
+  const filteredStores = stores.filter((s: Store) =>
+    s.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="w-full flex bg-transparent">
-      <div className="w-full ">
-        <div className="flex relative flex-col w-full">
-          <div className="w-full p-1">
-            <div className="w-full py-1 border-b max-w-custom mx-auto flex items-center gap-4 justify-between">
-              <h5 className="text-xs flex-1 font-work_font">
-                Viverra quis quam nec cursus lorem egestas venenatis diam sed
-                cursus.
-              </h5>
-              <div className="flex items-center justify-end">
-                <Link
-                  to={"cart/36364374"}
-                  className="p-3 rounded-full text-xl hover:bg-[#fafafa]"
-                >
-                  <TiSocialFacebook />
-                </Link>
-                <Link
-                  to={"cart/36364374"}
-                  className="p-3 rounded-full text-lg  hover:bg-[#fafafa]"
-                >
-                  <FaXTwitter />
-                </Link>
-                <Link
-                  to={"cart/36364374"}
-                  className="p-3 rounded-full text-lg  hover:bg-[#fafafa]"
-                >
-                  <FaInstagram />
-                </Link>
-                <Link
-                  to={"cart/36364374"}
-                  className="p-3 rounded-full text-lg  hover:bg-[#fafafa]"
-                >
-                  <FaYoutube />
-                </Link>
-              </div>
-            </div>
+    <header
+      style={{ backdropFilter: "blur(54px)" }}
+      className="bg-transparent w-full z-[40] border-b min-h-[75px] sticky left-0 top-0 flex items-center"
+    >
+      <div className="px-4 w-full lg:px-8">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex-1">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex max-w-[280px] p-3 py-2 border rounded-full hover:bg-[#F3F3EE] items-center gap-4 justify-between outline-none">
+                  <div className="flex items-center gap-2">
+                    <div className="w-[30px] h-[30px] flex bg-[#004E3F] items-center text-sm text-white justify-center rounded-full shrink-0">
+                      {singleStore?.name?.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="flex-1 text-xs md:text-sm truncate max-w-[160px]">
+                      {singleStore?.name ?? "Select store"}
+                    </span>
+                  </div>
+                  <LiaArrowsAltVSolid className="text-sm lg:text-lg shrink-0" />
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="w-[260px] border bg-white">
+                <DropdownMenuRadioGroup value={id ?? ""}>
+                  <div className="w-full my-1 p-2.5 gap-2 text-lg border-b flex items-center">
+                    <LuSearch className="shrink-0 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Search store"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="w-full text-sm bg-transparent border-none outline-none"
+                    />
+                  </div>
+
+                  <div className="w-full py-2 px-3">
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                      My Stores
+                    </span>
+                  </div>
+
+                  {filteredStores.map((store: Store) => (
+                    <DropdownMenuRadioItem
+                      key={store._id}
+                      value={store._id}
+                      className="w-full cursor-pointer py-2 hover:bg-[#F3F3EE] gap-2"
+                      onSelect={() =>
+                        navigate(`/dashboard/store/${store._id}`)
+                      }
+                    >
+                      <div className="flex justify-between items-center w-full">
+                        <div className="flex text-sm font-medium items-center gap-2">
+                          <IoStorefrontOutline fontSize="18px" />
+                          <span className="truncate max-w-[160px]">
+                            {store.name}
+                          </span>
+                        </div>
+                        <RiExternalLinkFill className="shrink-0 text-muted-foreground" />
+                      </div>
+                    </DropdownMenuRadioItem>
+                  ))}
+
+                  <DropdownMenuItem
+                    className="w-full my-2 p-2 hover:bg-[#F3F3EE] cursor-pointer border rounded-xl flex items-center justify-center gap-1 text-sm"
+                    onSelect={() => navigate("/onboarding")}
+                  >
+                    <GoPlus />
+                    Create Store
+                  </DropdownMenuItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <div
-            style={{
-              backdropFilter: "blur(54px)",
-            }}
-            className="w-full sticky top-0 p-4 py-3 bg-[#ffffffa0]"
-          >
-            <div className="w-full max-w-custom mx-auto flex items-center gap-4 justify-between">
-              <div className="flex items-center gap-8 lg:gap-12">
-                <Link
-                  to={"/"}
-                  className="text-lg lg:text-2xl text-[var(--dark-1)] font-selleasy_bold"
-                >
-                  <img src="/images/logo.svg" alt="" className="w-full" />
-                </Link>
-              </div>
-              <div className="hidden lg:flex flex-1 justify-center items-center gap-4">
-                <Link
-                  to={"#"}
-                  className="text-base p-2 px-4 rounded-full hover:bg-[var(--grey-1)] text-[var(--dark-1)] font-work_font font-normal"
-                >
-                  Shoes
-                </Link>
-                <Link
-                  to={"#"}
-                  className="text-base p-2 px-4 rounded-full hover:bg-[var(--grey-1)] text-[var(--dark-1)] font-work_font font-normal"
-                >
-                  Bags
-                </Link>
-                <Link
-                  to={"#"}
-                  className="text-base p-2 px-4 rounded-full hover:bg-[var(--grey-1)] text-[var(--dark-1)] font-work_font font-normal"
-                >
-                  Jackets
-                </Link>
-                <Link
-                  to={"#"}
-                  className="text-base p-2 px-4 rounded-full hover:bg-[var(--grey-1)] text-[var(--dark-1)] font-work_font font-normal"
-                >
-                  About Shop
-                </Link>
-              </div>
-              <div className="flex items-center justify-end gap-8 md:gap-12">
-                <Link
-                  to={"cart/36364374"}
-                  className="p-4 rounded-full text-xl h hover:bg-[#fafafa]"
-                >
-                  <BsCart />
-                </Link>
-              </div>
-            </div>
+
+          <div className="flex flex-1 justify-end items-center gap-2">
+            <UserProfile />
           </div>
         </div>
       </div>
-    </div>
+    </header>
   );
-};
-
-export default Header;
+}

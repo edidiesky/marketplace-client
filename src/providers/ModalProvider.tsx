@@ -6,27 +6,21 @@ import RegisterModal from '@/components/modals/auth/RegisterModal';
 import { useSelector } from 'react-redux'
 
 const ModalProvider = () => {
-    const {
-        loginmodal,
-        registermodal,
-        deletemessagemodal,
-        groupnamemodal,
-        addgroupmembersmodal,
-        channelmodal,
-        deletechannelmodal,
-        deleteworkspacemodal
-    } = useSelector((store: { modal?: any }) => store.modal);
+    // const {
+    //     loginmodal,
+    //     registermodal,
+    // } = useSelector((store: { modal?: any }) => store.modal);
 
     return (
         <>
             {/* animating the login modal */}
-            <AnimatePresence mode='wait' >
+            {/* <AnimatePresence mode='wait' >
                 {loginmodal && <LoginModal />}
-            </AnimatePresence>
+            </AnimatePresence> */}
             {/* animating the register modal */}
-            <AnimatePresence mode='wait' >
+            {/* <AnimatePresence mode='wait' >
                 {registermodal && <RegisterModal />}
-            </AnimatePresence>
+            </AnimatePresence> */}
       
         </>
     );

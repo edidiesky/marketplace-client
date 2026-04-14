@@ -1,96 +1,89 @@
-import { createSlice } from "@reduxjs/toolkit";
-const initialState = {
-  savedRooms: [],
-  loginmodal: false,
-  registermodal: false,
-  isCategoryModal:false,
-  isDeleteModal:false,
-  isSizeModal:false,
-  isColorModal:false,
-  isProductModal:false,
-  sizeId:null,
-  productId:null,
-  categoryId:null,
-  colorId:null,
-  deleteId:null
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+
+interface ModalState {
+  login: boolean;
+  register: boolean;
+  category: { open: boolean; id: string | null };
+  size: { open: boolean; id: string | null };
+  color: { open: boolean; id: string | null };
+  product: { open: boolean; id: string | null };
+  delete: { open: boolean; id: string | null };
+}
+
+const initialState: ModalState = {
+  login: false,
+  register: false,
+  category: { open: false, id: null },
+  size: { open: false, id: null },
+  color: { open: false, id: null },
+  product: { open: false, id: null },
+  delete: { open: false, id: null },
 };
 
-export const modalSlice = createSlice({
+const modalSlice = createSlice({
   name: "modals",
   initialState,
   reducers: {
-    onLoginModal: (state, _action) => {
-      state.loginmodal = true;
+    openLoginModal: (state) => {
+      state.login = true;
     },
-    offLoginModal: (state, _action) => {
-      state.loginmodal = false;
+    closeLoginModal: (state) => {
+      state.login = false;
     },
-
-    onRegisterModal: (state, _action) => {
-      state.registermodal = true;;
+    openRegisterModal: (state) => {
+      state.register = true;
     },
-    offRegisterModal: (state, _action) => {
-      state.registermodal = false;
+    closeRegisterModal: (state) => {
+      state.register = false;
     },
-    onCategoryModal: (state, action) => {
-      state.isCategoryModal = true;
-      state.categoryId = action.payload
+    openCategoryModal: (state, action: PayloadAction<string | null>) => {
+      state.category = { open: true, id: action.payload };
     },
-    offCategoryModal: (state, action) => {
-      state.isCategoryModal = false;
-      state.categoryId = null
+    closeCategoryModal: (state) => {
+      state.category = { open: false, id: null };
     },
-    onSizeModal: (state, action) => {
-      state.isSizeModal = true;
-      state.sizeId = action.payload
+    openSizeModal: (state, action: PayloadAction<string | null>) => {
+      state.size = { open: true, id: action.payload };
     },
-    offSizeModal: (state, action) => {
-      state.isSizeModal = false;
-      state.sizeId = null
+    closeSizeModal: (state) => {
+      state.size = { open: false, id: null };
     },
-    onColorModal: (state, action) => {
-      state.isColorModal = true;
-      state.colorId = action.payload
+    openColorModal: (state, action: PayloadAction<string | null>) => {
+      state.color = { open: true, id: action.payload };
     },
-    offColorModal: (state, action) => {
-      state.isColorModal = false;
-      state.colorId = null
+    closeColorModal: (state) => {
+      state.color = { open: false, id: null };
     },
-    onProductModal: (state, action) => {
-      state.isProductModal = true;
-      state.productId = action.payload
+    openProductModal: (state, action: PayloadAction<string | null>) => {
+      state.product = { open: true, id: action.payload };
     },
-    offProductModal: (state, action) => {
-      state.isProductModal = false;
-      state.productId = null
+    closeProductModal: (state) => {
+      state.product = { open: false, id: null };
     },
-
-    onDeleteModal: (state, action) => {
-      state.isDeleteModal = true;
-      state.deleteId = action.payload
+    openDeleteModal: (state, action: PayloadAction<string | null>) => {
+      state.delete = { open: true, id: action.payload };
     },
-    offDeleteModal: (state, action) => {
-      state.isDeleteModal = false;
-      state.deleteId = null
+    closeDeleteModal: (state) => {
+      state.delete = { open: false, id: null };
     },
   },
 });
 
 export const {
-  onLoginModal,
-  offLoginModal,
-  onRegisterModal,
-  offRegisterModal,
-  onCategoryModal,
-  offCategoryModal,
-  onSizeModal,
-  offSizeModal,
-  onColorModal,
-  offColorModal,
-  onDeleteModal,
-  offDeleteModal,
-  onProductModal,
-  offProductModal,
+  openLoginModal,
+  closeLoginModal,
+  openRegisterModal,
+  closeRegisterModal,
+  openCategoryModal,
+  closeCategoryModal,
+  openSizeModal,
+  closeSizeModal,
+  openColorModal,
+  closeColorModal,
+  openProductModal,
+  closeProductModal,
+  openDeleteModal,
+  closeDeleteModal,
 } = modalSlice.actions;
 
 export default modalSlice.reducer;

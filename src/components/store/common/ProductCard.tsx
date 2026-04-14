@@ -1,12 +1,10 @@
-import { productDataType } from "@/constants/types";
 import React from "react";
 import { BsCart2 } from "react-icons/bs";
 import { ImSearch } from "react-icons/im";
 import { AiFillStar } from "react-icons/ai";
 import { Link } from "react-router-dom";
-// #FFCE78
-export default function ProductCard({ product }: { product: productDataType }) {
-  // console.log("Product Images:", product?.images[0])
+import { Product } from "@/types/api";
+export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       to={`/store/${product?.store}/product/${product?._id}`}

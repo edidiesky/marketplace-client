@@ -1,135 +1,122 @@
-"use client";
-import { LogOut } from "@/redux/slices/authSlice";
-import { useLogoutMutation } from "@/redux/services/userApi";
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
-import { IoStorefrontOutline } from "react-icons/io5";
-
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { clearCredentials, selectCurrentUser } from "@/redux/slices/authSlice";
+import { useLogoutMutation } from "@/redux/services/authApi";
+import { useGetAllStoresQuery } from "@/redux/services/storeApi";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown";
-import { useGetAllStoreQuery } from "@/redux/services/storeApi";
+
 const UserProfile = () => {
-  const [active, setActive] = useState(false);
-  const { currentUser } = useSelector((store: { auth?: any }) => store.auth);
-  const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
+  const currentUser = useSelector(selectCurrentUser);
+  const [logout] = useLogoutMutation();
+
+  const { data: storesData } = useGetAllStoresQuery(
+    {},
+    { skip: !currentUser }
+  );
+
+  const firstStore = storesData?.data?.[0];
 
   const handleLogOut = async () => {
     try {
-      dispatch(LogOut(""));
-      await logout("");
-      toast.success("You have been logged out successfully!");
-    } catch (err: any) {
-      console.log(err);
-      toast.error(err?.data?.message || err.error);
+      await logout().unwrap();
+      dispatch(clearCredentials());
+      toast.success("You have been logged out successfully.");
+    } catch (err: unknown) {
+      if (
+        err &&
+        typeof err === "object" &&
+        "data" in err &&
+        typeof (err as { data?: { message?: string } }).data?.message === "string"
+      ) {
+        toast.error((err as { data: { message: string } }).data.message);
+      } else {
+        toast.error("Logout failed. Please try again.");
+      }
     }
   };
-  const { data } = useGetAllStoreQuery("");
 
-  const storeList = [
-    {
-      id: "13y644u744",
-      name: "Balenciaga Shop",
-    },
-    {
-      id: "13y644u744",
-      name: "Jeremy Shop",
-    },
-  ];
-  // console.log("store data", data)
+  if (!currentUser) return null;
+
   return (
-    <div className=" relative">
-      {currentUser && (
-        <div className="flex items-center justify-end gap-8">
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <div className="flex items-center gap-2">
-                {currentUser?.image ? (
-                  <img
-                    onClick={() => setActive(!active)}
-                    src={currentUser?.image}
-                    alt=""
-                    className="w-14 h-14 object-cover rounded-full"
-                  />
-                ) : (
-                  <div
-                    onClick={() => setActive(!active)}
-                    className="w-12 h-12 flex items-center text-[#fff] justify-center text-xl rounded-full bg-[#A1718A]"
-                  >
-                    {currentUser?.fullname?.slice("")[0]}
-                  </div>
-                )}
+    <div className="relative">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="flex items-center gap-2 outline-none">
+            {currentUser.profileImage ? (
+              <img
+                src={currentUser.profileImage}
+                alt="User avatar"
+                className="w-10 h-10 object-cover rounded-full"
+              />
+            ) : (
+              <div className="w-10 h-10 flex items-center justify-center text-white text-sm font-medium rounded-full bg-[#A1718A]">
+                {currentUser.firstName?.charAt(0).toUpperCase()}
               </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[270px] -translate-x-7 border bg-white">
-              <div className="w-full flex flex-col gap-4">
-                <div className="flex w-full relative py-3 border-b px-4 items-center gap-4 cursor-pointer">
-                  <img
-                    src={
-                      currentUser?.image
-                        ? currentUser?.image
-                        : "https://fundednext.fra1.digitaloceanspaces.com/dashboard/demo-avatar.jpg"
-                    }
-                    className="w-12 h-12 object-cover rounded-full"
-                    alt="Avatar for user"
-                  />
-                  <span className="text-base font-selleasy_regular">
-                    {currentUser?.fullname}
-                    <span className="block font-normal font-work_font text-xs text-dark">
-                      My Account
-                    </span>
-                  </span>
-                </div>
-                <div className="flex flex-col gap-3">
-                  <div className="w-full font-work_font flex flex-col pb-3 border-b">
-                    <Link
-                      to={`/dashboard/store/${data && data[0]?._id}`}
-                      className="text-sm block font-normal px-4 py-2 hover:bg-[#fafafa] text-[#000]"
-                    >
-                      My Dashboard
-                    </Link>
-                    <Link
-                      to={`/dashboard/store/${data && data[0]?._id}`}
-                      className="text-sm block font-normal px-4 py-2 hover:bg-[#fafafa] text-[#000]"
-                    >
-                      My Stores
-                    </Link>
-                    <Link
-                      to={"/dashboard/store/${data && data[0]?._id}"}
-                      className="text-sm block font-normal px-4 py-2 hover:bg-[#fafafa] text-[#000]"
-                    >
-                      My Messages
-                    </Link>
-                  </div>
-                  <div className="w-full font-work_font flex flex-col pb-3 border-b">
-                    <Link
-                      to={`/dashboard/store/${data && data[0]?._id}`}
-                      className="text-sm block  font-normal px-4 py-2 hover:bg-[#fafafa] text-[#000]"
-                    >
-                      Account Settings
-                    </Link>
-                  </div>
-                </div>
+            )}
+          </button>
+        </DropdownMenuTrigger>
 
-                <div
-                  onClick={handleLogOut}
-                  className="w-full hover:bg-[#fafafa] cursor-pointer font-work_font text-center py-2 font-semibold text-[#d02828ed]"
-                >
-                  Sign Out
-                </div>
+        <DropdownMenuContent className="w-[270px] border bg-white shadow-md">
+          <div className="flex flex-col gap-4">
+            <div className="flex w-full py-3 border-b px-4 items-center gap-3">
+              <img
+                src={
+                  currentUser.profileImage ??
+                  "https://fundednext.fra1.digitaloceanspaces.com/dashboard/demo-avatar.jpg"
+                }
+                className="w-10 h-10 object-cover rounded-full"
+                alt="User avatar"
+              />
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold">
+                  {currentUser.firstName} {currentUser.lastName}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {currentUser.email}
+                </span>
               </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )}
+            </div>
+
+            <div className="flex flex-col pb-3 border-b">
+              {firstStore && (
+                <>
+                  <Link
+                    to={`/dashboard/store/${firstStore._id}`}
+                    className="text-sm px-4 py-2 hover:bg-muted text-foreground"
+                  >
+                    My Dashboard
+                  </Link>
+                  <Link
+                    to={`/dashboard/store/${firstStore._id}/messages`}
+                    className="text-sm px-4 py-2 hover:bg-muted text-foreground"
+                  >
+                    My Messages
+                  </Link>
+                </>
+              )}
+              <Link
+                to={firstStore ? `/dashboard/store/${firstStore._id}/account` : "/onboarding"}
+                className="text-sm px-4 py-2 hover:bg-muted text-foreground"
+              >
+                Account Settings
+              </Link>
+            </div>
+
+            <button
+              onClick={handleLogOut}
+              className="w-full text-center py-2 text-sm font-semibold text-destructive hover:bg-muted transition-colors"
+            >
+              Sign Out
+            </button>
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };

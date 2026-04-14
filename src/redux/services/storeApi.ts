@@ -1,6 +1,6 @@
 import { STORE_URL } from "@/constants";
 import { apiSlice } from "./apiSlice";
-import type { Store, StoreListResponse, CreateStorePayload, UpdateStorePayload } from "@/types/api";
+import type { Store, StoreListResponse, CreateStorePayload, UpdateStorePayload, ApiSuccessResponse } from "@/types/api";
 
 export const storeApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

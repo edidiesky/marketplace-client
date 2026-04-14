@@ -84,4 +84,5 @@ export type productDataType = {
   availableStock: number;
   thresholdStock?:number;
   isArchive?:boolean;
+  
 };
