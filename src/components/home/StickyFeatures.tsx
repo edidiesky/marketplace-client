@@ -1,6 +1,11 @@
-
-import { motion,} from "framer-motion";
-import { ShoppingBag, BarChart3, Truck, Zap } from "lucide-react";
+import React, { useRef } from "react";
+import { motion } from "framer-motion";
+import {
+  ShoppingBag,
+  BarChart3,
+  Truck,
+  Zap,
+} from "lucide-react";
 
 const features = [
   {
@@ -12,10 +17,12 @@ const features = [
       "Customize your storefront with your brand colors and logo",
     ],
     icon: ShoppingBag,
-    bg: "#f0fdf4",
-    accent: "#004E3F",
-    cardLabel: "Store dashboard",
-    cardSub: "14 products · 3 low stock",
+    visual: {
+      bg: "#f0fdf4",
+      accent: "#004E3F",
+      label: "Store dashboard",
+      sublabel: "14 products · 3 low stock",
+    },
   },
   {
     tag: "ANALYTICS",
@@ -26,10 +33,12 @@ const features = [
       "Customer acquisition and retention tracking",
     ],
     icon: BarChart3,
-    bg: "#fefce8",
-    accent: "#854d0e",
-    cardLabel: "Revenue this month",
-    cardSub: "₦1,240,000 · +18% vs last month",
+    visual: {
+      bg: "#fefce8",
+      accent: "#854d0e",
+      label: "Revenue this month",
+      sublabel: "₦1,240,000 · +18% vs last month",
+    },
   },
   {
     tag: "ORDER FULFILLMENT",
@@ -40,10 +49,12 @@ const features = [
       "Buyers receive real-time delivery notifications",
     ],
     icon: Truck,
-    bg: "#eff6ff",
-    accent: "#1d4ed8",
-    cardLabel: "Order #ORD-00482",
-    cardSub: "Dispatched · Arriving Saturday",
+    visual: {
+      bg: "#eff6ff",
+      accent: "#1d4ed8",
+      label: "Order #ORD-00482",
+      sublabel: "Dispatched · Arriving Saturday",
+    },
   },
   {
     tag: "PAYMENTS",
@@ -54,21 +65,27 @@ const features = [
       "Full refund management from the dashboard",
     ],
     icon: Zap,
-    bg: "#fdf4ff",
-    accent: "#7e22ce",
-    cardLabel: "Payout processed",
-    cardSub: "₦340,000 · GTBank · 2 mins ago",
+    visual: {
+      bg: "#fdf4ff",
+      accent: "#7e22ce",
+      label: "Payout processed",
+      sublabel: "₦340,000 · GTBank · 2 mins ago",
+    },
   },
 ];
 
 export default function StickyFeatures() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  
+
   return (
-    <section className="bg-white">
-      <div className="px-4 lg:px-16 py-24 text-center max-w-7xl mx-auto">
-        <span className="text-xs uppercase tracking-widest text-[#888]">
+    <section ref={containerRef} className="relative py-20 flex flex-col gap-10 bg-gray-100">
+      <div className="px-4 lg:px-16 text-center">
+        <span className="text-xs uppercase tracking-widest text-muted-foreground">
           Everything you need
         </span>
-        <h2 className="text-3xl lg:text-5xl font-bold mt-2 max-w-2xl mx-auto leading-tight text-[#171717]">
+        <h2 className="text-4xl lg:text-6xl font-semibold mt-2 max-w-2xl mx-auto leading-tight">
           One platform. Every tool your store needs.
         </h2>
       </div>
@@ -78,32 +95,30 @@ export default function StickyFeatures() {
         return (
           <div
             key={i}
-            className="sticky top-[68px] min-h-screen flex items-center px-4 lg:px-16 py-20 bg-white"
+            className="sticky top-0 min-h-screen flex items-center px-4 lg:px-16 py-20"
             style={{ zIndex: i + 1 }}
           >
-            <div className="w-full max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+            <div className="w-full max-w-10xl h-full bg-white p-12 mx-auto grid lg:grid-cols-2 gap-16 items-center">
+              {/* Left: Text */}
               <div className="flex flex-col gap-6">
                 <span
                   className="text-xs font-semibold tracking-widest px-3 py-1 rounded-full w-fit"
                   style={{
-                    backgroundColor: feature.bg,
-                    color: feature.accent,
+                    backgroundColor: feature.visual.bg,
+                    color: feature.visual.accent,
                   }}
                 >
                   {feature.tag}
                 </span>
-                <h3 className="text-2xl lg:text-4xl font-bold leading-tight text-[#171717]">
+                <h3 className="text-2xl lg:text-5xl font-semibold leading-tight">
                   {feature.title}
                 </h3>
                 <ul className="flex flex-col gap-3">
                   {feature.bullets.map((bullet, j) => (
-                    <li
-                      key={j}
-                      className="flex items-start gap-3 text-sm text-[#666]"
-                    >
+                    <li key={j} className="flex items-start gap-3 text-sm text-muted-foreground">
                       <span
                         className="w-1.5 h-1.5 rounded-full mt-2 shrink-0"
-                        style={{ backgroundColor: feature.accent }}
+                        style={{ backgroundColor: feature.visual.accent }}
                       />
                       {bullet}
                     </li>
@@ -111,32 +126,35 @@ export default function StickyFeatures() {
                 </ul>
               </div>
 
+              {/* Right: Visual card */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                viewport={{ once: true, margin: "-100px" }}
-                className="rounded-2xl p-10 min-h-[360px] flex flex-col justify-between relative overflow-hidden"
-                style={{ backgroundColor: feature.bg }}
+                viewport={{ once: true }}
+                className="rounded-2xl p-10 min-h-[340px] flex flex-col justify-between relative overflow-hidden"
+                style={{ backgroundColor: feature.visual.bg }}
               >
                 <div
                   className="absolute top-6 right-6 w-12 h-12 rounded-xl flex items-center justify-center"
-                  style={{ backgroundColor: feature.accent }}
+                  style={{ backgroundColor: feature.visual.accent }}
                 >
                   <Icon className="text-white w-5 h-5" />
                 </div>
                 <div
                   className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full opacity-10"
-                  style={{ backgroundColor: feature.accent }}
+                  style={{ backgroundColor: feature.visual.accent }}
                 />
                 <div className="mt-auto">
                   <p
                     className="text-lg font-semibold"
-                    style={{ color: feature.accent }}
+                    style={{ color: feature.visual.accent }}
                   >
-                    {feature.cardLabel}
+                    {feature.visual.label}
                   </p>
-                  <p className="text-sm text-[#888] mt-1">{feature.cardSub}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {feature.visual.sublabel}
+                  </p>
                 </div>
               </motion.div>
             </div>

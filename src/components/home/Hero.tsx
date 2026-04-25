@@ -1,10 +1,17 @@
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { TfiArrowDown } from "react-icons/tfi";
 import { selectCurrentUser } from "@/redux/slices/authSlice";
 import { useGetAllStoresQuery } from "@/redux/services/storeApi";
+import { motion } from "framer-motion";
+import { ArrowRight, ShoppingBag, TrendingUp, Zap } from "lucide-react";
 
-const Hero = () => {
+const badges = [
+  { icon: ShoppingBag, label: "50K+ products listed" },
+  { icon: TrendingUp, label: "₦2B+ revenue processed" },
+  { icon: Zap, label: "3s average checkout" },
+];
+
+export default function Hero() {
   const currentUser = useSelector(selectCurrentUser);
   const navigate = useNavigate();
 
@@ -17,7 +24,7 @@ const Hero = () => {
 
   const handleCta = () => {
     if (!currentUser) {
-      navigate("/login");
+      navigate("/onboarding");
       return;
     }
     if (firstStore) {
@@ -28,63 +35,95 @@ const Hero = () => {
   };
 
   return (
-    <div className="py-12 w-full gap-8 justify-center">
-      <div className="max-w-custom mx-auto z-20 relative overflow-hidden w-[90%] flex flex-col gap-8">
-        <div className="w-full grid lg:grid-cols-custom gap-8">
-          <div className="w-full flex flex-col gap-10">
-            <div className="p-12 min-h-[380px] rounded-xl items-start gap-8 bg-[var(--dark-1)] justify-end flex flex-col w-full">
-              <h3 className="font-normal max-w-[700px] leading-[1.4] text-4xl lg:text-6xl text-white">
-                One platform, <br /> multiple stores, <br /> real-time control.
-              </h3>
-              <div className="flex items-center gap-4">
-                <button onClick={handleCta} className="btn btn_2">
-                  <span>
-                    {currentUser ? "Proceed to Dashboard" : "Get Started"}
-                  </span>
-                </button>
-              </div>
+    <section className="w-full min-h-[90vh] flex flex-col items-center justify-center px-4 lg:px-8 py-20 bg-white relative overflow-hidden">
+      {/* background grid */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "linear-gradient(#171717 1px, transparent 1px), linear-gradient(90deg, #171717 1px, transparent 1px)",
+          backgroundSize: "60px 60px",
+        }}
+      />
+
+      {/* pill badge */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="mb-6 px-4 py-1.5 rounded-full border border-black/10 bg-[#f4f3ee] text-xs font-medium text-[#444] flex items-center gap-2"
+      >
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+        Now live — launch your store in under 5 minutes
+      </motion.div>
+
+      {/* headline */}
+      <motion.h1
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="text-5xl lg:text-[72px] font-bold text-center leading-[1.1] tracking-tight text-[#171717] max-w-4xl"
+      >
+        One platform.
+        <br />
+        <span className="text-[#171717]/40">Multiple stores.</span>
+        <br />
+        Real-time control.
+      </motion.h1>
+
+      {/* subheadline */}
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="mt-6 text-base lg:text-lg text-[#666] text-center max-w-xl leading-relaxed"
+      >
+        Selleasi gives every seller the infrastructure to launch, manage, and
+        scale their online store without writing a single line of code.
+      </motion.p>
+
+      {/* CTA buttons */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="mt-8 flex items-center gap-4 flex-wrap justify-center"
+      >
+        <button
+          onClick={handleCta}
+          className="h-12 px-7 rounded-full bg-[#171717] text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
+        >
+          {currentUser ? "Go to Dashboard" : "Start for free"}
+          <ArrowRight size={16} />
+        </button>
+        <button
+          onClick={() => navigate("/store")}
+          className="h-12 px-7 rounded-full border border-black/10 text-sm font-medium hover:bg-[#f4f3ee] transition-colors"
+        >
+          Browse stores
+        </button>
+      </motion.div>
+
+      {/* stat badges */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="mt-12 flex items-center gap-4 flex-wrap justify-center"
+      >
+        {badges.map((badge) => {
+          const Icon = badge.icon;
+          return (
+            <div
+              key={badge.label}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#f4f3ee] text-xs font-medium text-[#444]"
+            >
+              <Icon size={14} className="text-[#171717]" />
+              {badge.label}
             </div>
-
-            <div className="flex items-end flex-col md:flex-row gap-8">
-              <div className="w-24 text-2xl bg-white h-24 rounded-full border flex items-center justify-center">
-                <TfiArrowDown />
-              </div>
-              <div className="flex items-center flex-col md:flex-row flex-1">
-                <div className="p-8 md:p-10 min-h-[180px] rounded-xl items-start gap-8 bg-[var(--grey-1)] justify-center flex flex-col flex-1">
-                  <h3 className="font-normal leading-[1.4] text-sm lg:text-base text-grey">
-                    SellEasy, the website builder that turns your frontend into
-                    a conversion-oriented machine
-                  </h3>
-                </div>
-                <div className="w-8 h-[2px] bg-[var(--grey-1)]" />
-                <div className="p-8 md:p-10 min-h-[180px] bg-white rounded-xl items-start gap-8 border justify-center flex flex-col flex-1">
-                  <h3 className="font-normal leading-[1.4] text-sm lg:text-base text-grey">
-                    SellEasy, the website builder that turns your frontend into
-                    a conversion-oriented machine
-                  </h3>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="w-[270px] flex flex-col gap-4">
-            <div className="p-6 w-full min-h-[400px] rounded-xl bg-[var(--grey-1)]" />
-            <button onClick={handleCta} className="btn btn_2">
-              <span className="text-sm">Start Building your store</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full relative -mt-12 z-10">
-        <img
-          src="https://www.nextstore.com/_next/image?url=%2Fbanner-with-brand.png&w=1920&q=75"
-          alt=""
-          className="w-full h-full object-cover"
-        />
-      </div>
-    </div>
+          );
+        })}
+      </motion.div>
+    </section>
   );
-};
-
-export default Hero;
+}

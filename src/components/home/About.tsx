@@ -1,4 +1,3 @@
-// src/components/home/About.tsx
 import AnimateTextWord from "@/components/common/AnimateTextWord";
 import { Link } from "react-router-dom";
 import React from "react";

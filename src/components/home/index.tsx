@@ -1,21 +1,16 @@
 import Hero from "./Hero";
-import About from "./About";
-import TopIdeas from "./TopIdeas";
-// Newsletter
 import Header from "../common/Header";
 import Footer from "../common/Footer";
 import SmoothScroll from "@/constants/SmoothScroll";
+import StatsScroll from "./Stats";
+import StickyFeatures from "./StickyFeatures";
 const HomeIndex = () => {
   return (
     <SmoothScroll>
       <Header />
       <Hero />
-      <About />
-      <TopIdeas />
-      {/* <Reviews /> */}
-      {/* <FAQ /> */}
-      {/* <Newsletter /> */}
-
+      <StatsScroll />
+      <StickyFeatures />
       <Footer />
     </SmoothScroll>
   );

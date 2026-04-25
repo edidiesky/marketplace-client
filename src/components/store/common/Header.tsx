@@ -1,123 +1,62 @@
-import React from "react";
+// src/components/store/common/Header.tsx
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { LiaArrowsAltVSolid } from "react-icons/lia";
-import { GoPlus } from "react-icons/go";
-import { LuSearch } from "react-icons/lu";
-import { RiExternalLinkFill } from "react-icons/ri";
-import { IoStorefrontOutline } from "react-icons/io5";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown";
-import { useNavigate, useParams } from "react-router-dom";
-import { useGetAllStoresQuery, useGetStoreQuery } from "@/redux/services/storeApi";
-import UserProfile from "@/components/common/UserProfile";
+import { ShoppingCart } from "lucide-react";
 import { selectCurrentUser } from "@/redux/slices/authSlice";
-import type { Store } from "@/types/api";
+import { useGetStoreQuery } from "@/redux/services/storeApi";
+import { useGetUserCartQuery } from "@/redux/services/cartApi";
 
-export default function Header() {
-  const currentUser = useSelector(selectCurrentUser);
+export default function StoreHeader() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [search, setSearch] = React.useState("");
+  const currentUser = useSelector(selectCurrentUser);
 
-  const { data: storesData } = useGetAllStoresQuery(
-    {},
-    { skip: !currentUser }
-  );
-  const { data: singleStoreData } = useGetStoreQuery(id ?? "", {
-    skip: !id,
+  const { data: storeData } = useGetStoreQuery(id ?? "", { skip: !id });
+  const { data: cartData } = useGetUserCartQuery(id ?? "", {
+    skip: !id || !currentUser,
   });
 
-  const stores = storesData?.data ?? [];
-  const singleStore = singleStoreData?.data;
-
-  const filteredStores = stores.filter((s: Store) =>
-    s.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const store = storeData?.data;
+  const cartCount = cartData?.data?.items?.length ?? 0;
 
   return (
-    <header
-      style={{ backdropFilter: "blur(54px)" }}
-      className="bg-transparent w-full z-[40] border-b min-h-[75px] sticky left-0 top-0 flex items-center"
-    >
-      <div className="px-4 w-full lg:px-8">
-        <div className="flex w-full items-center justify-between">
-          <div className="flex-1">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex max-w-[280px] p-3 py-2 border rounded-full hover:bg-[#F3F3EE] items-center gap-4 justify-between outline-none">
-                  <div className="flex items-center gap-2">
-                    <div className="w-[30px] h-[30px] flex bg-[#004E3F] items-center text-sm text-white justify-center rounded-full shrink-0">
-                      {singleStore?.name?.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="flex-1 text-xs md:text-sm truncate max-w-[160px]">
-                      {singleStore?.name ?? "Select store"}
-                    </span>
-                  </div>
-                  <LiaArrowsAltVSolid className="text-sm lg:text-lg shrink-0" />
-                </button>
-              </DropdownMenuTrigger>
+    <header className="w-full sticky top-0 z-50 border-b bg-white/90 backdrop-blur-sm">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 h-16 flex items-center justify-between">
+        <Link
+          to={`/store/${id}`}
+          className="text-lg font-bold tracking-tight text-[#171717]"
+        >
+          {store?.name ?? "Store"}
+        </Link>
 
-              <DropdownMenuContent className="w-[260px] border bg-white">
-                <DropdownMenuRadioGroup value={id ?? ""}>
-                  <div className="w-full my-1 p-2.5 gap-2 text-lg border-b flex items-center">
-                    <LuSearch className="shrink-0 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder="Search store"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="w-full text-sm bg-transparent border-none outline-none"
-                    />
-                  </div>
-
-                  <div className="w-full py-2 px-3">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                      My Stores
-                    </span>
-                  </div>
-
-                  {filteredStores.map((store: Store) => (
-                    <DropdownMenuRadioItem
-                      key={store._id}
-                      value={store._id}
-                      className="w-full cursor-pointer py-2 hover:bg-[#F3F3EE] gap-2"
-                      onSelect={() =>
-                        navigate(`/dashboard/store/${store._id}`)
-                      }
-                    >
-                      <div className="flex justify-between items-center w-full">
-                        <div className="flex text-sm font-medium items-center gap-2">
-                          <IoStorefrontOutline fontSize="18px" />
-                          <span className="truncate max-w-[160px]">
-                            {store.name}
-                          </span>
-                        </div>
-                        <RiExternalLinkFill className="shrink-0 text-muted-foreground" />
-                      </div>
-                    </DropdownMenuRadioItem>
-                  ))}
-
-                  <DropdownMenuItem
-                    className="w-full my-2 p-2 hover:bg-[#F3F3EE] cursor-pointer border rounded-xl flex items-center justify-center gap-1 text-sm"
-                    onSelect={() => navigate("/onboarding")}
-                  >
-                    <GoPlus />
-                    Create Store
-                  </DropdownMenuItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          <div className="flex flex-1 justify-end items-center gap-2">
-            <UserProfile />
-          </div>
+        <div className="flex items-center gap-4">
+          {currentUser ? (
+            <button
+              onClick={() =>
+                navigate(`/store/${id}/cart/${cartData?.data?._id ?? ""}`)
+              }
+              className="relative flex items-center gap-2 h-10 px-4 rounded-full border border-black/10 text-sm font-medium hover:bg-[#f4f3ee] transition-colors"
+            >
+              <ShoppingCart size={16} />
+              Cart
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#171717] text-white text-xs flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={() =>
+                navigate("/login", {
+                  state: { from: { pathname: `/store/${id}` } },
+                })
+              }
+              className="h-10 px-4 rounded-full bg-[#171717] text-white text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              Sign in
+            </button>
+          )}
         </div>
       </div>
     </header>

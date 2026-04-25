@@ -1,6 +1,6 @@
 import { CART_URL } from "@/constants";
 import { apiSlice } from "./apiSlice";
-import type { Cart, AddToCartPayload, UpdateCartItemPayload } from "@/types/api";
+import type { Cart, AddToCartPayload, UpdateCartItemPayload, ApiSuccessResponse } from "@/types/api";
 
 export const cartApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
